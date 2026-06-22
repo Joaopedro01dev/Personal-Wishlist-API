@@ -13,7 +13,7 @@ class WishlistItemUpdate(BaseModel):
     description: Optional[str] = None
     link: Optional[str] = None
     sort_order: Optional[int] = None
-    purchased: bool
+    purchased: Optional[bool] = None
 
 class WishlistItemResponse(OrmBase):
     name: str

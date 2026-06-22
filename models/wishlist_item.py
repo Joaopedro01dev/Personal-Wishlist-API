@@ -7,7 +7,7 @@ class WishlistItem(db.Model):
     name = db.Column(db.String(64), nullable=False)
     description = db.Column(db.Text, nullable=True)
     link = db.Column(db.String(128), nullable=True)
-    purchased = db.Column(db.Boolean, default=False)
+    purchased = db.Column(db.Boolean, nullable=False, default=False)
     sort_order = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
