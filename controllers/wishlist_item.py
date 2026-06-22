@@ -11,7 +11,7 @@ from utils import DefaultResponse
 wishlistItem_controller = Blueprint("wishlistItem_controller", __name__, url_prefix="/api/wishlist")
 
 @wishlistItem_controller.post("/")
-@api.validate(json=WishlistItemCreate, resp=Response(HTTP_201=WishlistItemResponse), tags=["wishlistItem"])
+@api.validate(json=WishlistItemCreate, resp=Response(HTTP_201=DefaultResponse), tags=["wishlistItem"])
 def post_item():
     """
     Create an wishlist item
@@ -23,7 +23,7 @@ def post_item():
     db.session.add(item)
     db.session.commit()
 
-    response = WishlistItemResponse.model_validate(item).to_response_dict()
+    response = DefaultResponse(id=item.id, msg="Item criado com sucesso.").model_dump()
 
     return response, 201
 
@@ -56,7 +56,7 @@ def get_item(item_id):
     return response, 200
 
 @wishlistItem_controller.put("/<int:item_id>")
-@api.validate(json=WishlistItemCreate, resp=Response(HTTP_200=WishlistItemResponse, HTTP_404=DefaultResponse), tags=["wishlistItem"])
+@api.validate(json=WishlistItemUpdate, resp=Response(HTTP_200=WishlistItemResponse, HTTP_404=DefaultResponse), tags=["wishlistItem"])
 def put_item(item_id):
     """
     Update an item by id
