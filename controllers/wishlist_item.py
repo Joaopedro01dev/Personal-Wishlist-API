@@ -11,26 +11,19 @@ from utils import DefaultResponse
 wishlistItem_controller = Blueprint("wishlistItem_controller", __name__, url_prefix="/api/wishlist")
 
 @wishlistItem_controller.post("/")
-@api.validate(json=WishlistItemCreate, resp=Response(HTTP_201=DefaultResponse), tags=["wishlistItem"])
+@api.validate(json=WishlistItemCreate, resp=Response(HTTP_201=WishlistItemResponse), tags=["wishlistItem"])
 def post_item():
     """
     Create an wishlist item
     """
 
-    data = request.json
-
-    item = WishlistItem(
-        name = data["name"],
-        description = data["description"] if "description" in data else None,
-        link = data["link"] if "link" in data else None,
-        purchased = data["purchased"] if "purchased" in data else None,
-        sort_order = data["sort_order"] if "sort_order" in data else None
-    )
+    dados = request.context.json.model_dump(exclude_none=True)
+    item = WishlistItem(**dados)
 
     db.session.add(item)
     db.session.commit()
 
-    response = DefaultResponse(id=item.id, msg="Item criado com sucesso")
+    response = WishlistItemResponse.model_validate(item).to_response_dict()
 
     return response, 201
 
@@ -63,7 +56,7 @@ def get_item(item_id):
     return response, 200
 
 @wishlistItem_controller.put("/<int:item_id>")
-@api.validate(json=WishlistItemCreate, resp=Response(HTTP_200=DefaultResponse, HTTP_404=DefaultResponse), tags=["wishlistItem"])
+@api.validate(json=WishlistItemCreate, resp=Response(HTTP_200=WishlistItemResponse, HTTP_404=DefaultResponse), tags=["wishlistItem"])
 def put_item(item_id):
     """
     Update an item by id
@@ -72,19 +65,16 @@ def put_item(item_id):
     item = db.session.get(WishlistItem, item_id)
 
     if item is None:
-        response = DefaultResponse(msg=f"Item com o id {item_id} nao foi encontrado")
+        response = DefaultResponse(msg="Item nao foi encontrado")
         return response, 404
     
-    data = request.json
+    dados_novos = request.context.json.model_dump(exclude_unset=True)
 
-    item.name = data["name"]
-    item.description = data["description"] if "description" in data else item.description
-    item.link = data["link"] if "link" in data else item.link
-    item.purchased = data["purchased"] if "purchased" in data else item.purchased
-    item.sort_order = sort_order = data["sort_order"] if "sort_order" in data else item.sort_order
+    for chave, valor in dados_novos.items():
+        setattr(item, chave, valor)
 
     db.session.commit()
-    response = DefaultResponse(id=item_id, msg="Item atualizado com sucesso")
+    response = WishlistItemResponse.model_validate(item).to_response_dict()
 
     return response, 200
 

@@ -9,7 +9,7 @@ class WishlistItemCreate(BaseModel):
     sort_order: Optional[int] = None
 
 class WishlistItemUpdate(BaseModel):
-    name: str
+    name: Optional[str] = None
     description: Optional[str] = None
     link: Optional[str] = None
     sort_order: Optional[int] = None
@@ -17,9 +17,9 @@ class WishlistItemUpdate(BaseModel):
 
 class WishlistItemResponse(OrmBase):
     name: str
-    description: Optional[str] = None
-    link: Optional[str] = None
-    sort_order: Optional[int] = None
+    description: Optional[str]
+    link: Optional[str]
+    sort_order: Optional[int]
     purchased: bool
 
 class WishlistItemList(ResponseBase):
