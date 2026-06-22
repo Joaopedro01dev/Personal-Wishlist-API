@@ -49,7 +49,7 @@ def get_item(item_id):
     item = db.session.get(WishlistItem, item_id)
 
     if item is None:
-        response = DefaultResponse(msg=f"Item com o id {item_id} nao foi encontrado")
+        response = DefaultResponse(msg="Item não encontrado").model_dump(exclude_none=True)
         return response, 404
     
     response = WishlistItemResponse.model_validate(item).to_response_dict()
@@ -65,7 +65,7 @@ def put_item(item_id):
     item = db.session.get(WishlistItem, item_id)
 
     if item is None:
-        response = DefaultResponse(msg="Item nao foi encontrado")
+        response = DefaultResponse(msg="Item não encontrado").model_dump(exclude_none=True)
         return response, 404
     
     dados_novos = request.context.json.model_dump(exclude_unset=True)
@@ -88,12 +88,12 @@ def delete_item(item_id):
     item = db.session.get(WishlistItem, item_id)
 
     if item is None:
-        response = DefaultResponse(id=item_id, msg=f"O item com id {item_id} nao foi encontrado")
+        response = DefaultResponse(msg="Item não encontrado").model_dump(exclude_none=True)
         return response, 404
     
     db.session.delete(item)
     db.session.commit()
 
-    response = DefaultResponse(id=item_id, msg=f"Item com id {item_id} foi deletado com sucesso")
+    response = DefaultResponse(msg="Item deletado com sucesso.").model_dump(exclude_none=True)
     return response, 200
 
